@@ -2,26 +2,33 @@ name: Daily Price Update
 
 on:
   schedule:
-    - cron: '0 0 * * *'
-  workflow_dispatch:
+    - cron: '0 0 * * *' # প্রতিদিন রাত ১২টায় চলবে
+  workflow_dispatch: # ম্যানুয়ালি চালানোর জন্য
 
 jobs:
   build:
     runs-on: ubuntu-latest
+
+    # এখানে আপনার Supabase Secrets কানেক্ট করা হচ্ছে
     env:
       SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
       SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Set up Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
           python-version: '3.9'
 
       - name: Install dependencies
-        run: pip install requests beautifulsoup4 supabase
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          # অথবা সরাসরি এভাবেও লিখতে পারেন:
+          # pip install supabase requests beautifulsoup4
 
       - name: Run Scraper
         run: python scraper.py
